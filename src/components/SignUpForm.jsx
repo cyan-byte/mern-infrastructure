@@ -1,6 +1,7 @@
-import { Component } from "react";
+import React from "react";
+import { getUser, signUp } from "../utilities/users-service";
 
-export default class SignUpForm extends Component {
+export class SignUpForm extends React.Component {
   state = {
     name: "",
     email: "",
@@ -9,22 +10,34 @@ export default class SignUpForm extends Component {
     error: "",
   };
 
-  // The object passed to setState is merged with the current state object
-  handleChange = (evt) => {
+  handleChange = (e) => {
     this.setState({
-      [evt.target.name]: evt.target.value,
+      [e.target.name]: e.target.value,
       error: "",
     });
   };
 
-  handleSubmit = (evt) => {
-    evt.preventDefault(alert(JSON.stringify(this.state)));
+  handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = { ...this.state };
+      delete formData.error;
+      delete formData.confirm;
+
+      const user = await signUp(formData);
+
+      this.props.setUser(user);
+    } catch (error) {
+      this.setState({ error: "Sign Up Failed - Try Again" });
+    }
   };
 
   render() {
-    const disable = this.state.password !== this.state.confirm;
+    const disable = this.password !== this.confirm;
+    // console.log(disable);
     return (
       <div>
+        <h1>Sign Up</h1>
         <div className="form-container">
           <form autoComplete="off" onSubmit={this.handleSubmit}>
             <label>Name</label>

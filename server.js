@@ -1,31 +1,39 @@
-require('dotenv').config()
-require('./config/database')
-const port = process.env.PORT || 3001;
-const express = require('express');
-const path = require('path');
-const favicon = require('serve-favicon');
-const logger = require('morgan');
+const express = require("express");
+const path = require("path");
+const favicon = require("serve-favicon");
+const logger = require("morgan");
+const dotenv = require("dotenv");
+const mongoose = require("mongoose");
+const userRouter = require("./routes/api/users");
+
+dotenv.config();
+
+mongoose.connect(process.env.DATABASE_URL);
+
+const db = mongoose.connection;
+
+db.on("connected", () => {
+  console.log(`Connected to ${db.name} at ${db.host}:${db.port}...`);
+});
+
 const app = express();
 
-app.use(logger('dev'));
+app.use(logger("dev"));
 app.use(express.json());
 
-// Configure both serve-favicon & static middleware
-// to serve from the production 'build' folder
-app.use(favicon(path.join(__dirname, 'build', 'favicon.ico')));
-app.use(express.static(path.join(__dirname, 'build')));
+app.use(favicon(path.join(__dirname, "build", "favicon.ico")));
+app.use(express.static(path.join(__dirname, "build")));
 
-// Routes
+app.use(require("./config/checkToken"));
 
+app.use("/api/users", userRouter);
 
-// Catch-All Route (catches anything that comes after the slash; it serves the index.html when user types a path into address bar and presses enter, the user refreshes the browser or an external link in an email included on another webpage ) (catches anything that is not included in the routes, so it will send user to index.html [could include an error page])
+const port = process.env.PORT || 3001;
 
-app.get('/*', function(req, res) {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'));
-  });
+app.listen(port, () => {
+  console.log(`SERVER STARTED ON PORT ${port}...`);
+});
 
-// Where are we?
-
-app.listen(port, function() {
-    console.log(`Express app running on port ${port}`)
-  });
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});

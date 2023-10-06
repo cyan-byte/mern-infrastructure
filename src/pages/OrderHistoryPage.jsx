@@ -1,9 +1,14 @@
-import React, { Component } from 'react'
+import { checkToken } from "../utilities/users-service";
 
-export default class OrderHistoryPage extends Component {
-  render() {
-    return (
-      <div>OrderHistoryPage</div>
-    )
-  }
-}
+export const OrderHistoryPage = function () {
+  const handleCheckToken = async function () {
+    checkToken();
+  };
+
+  return (
+    <div>
+      <h1>Order History Page</h1>
+      <button onClick={handleCheckToken}>Check When My Login Expires</button>
+    </div>
+  );
+};

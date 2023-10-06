@@ -1,31 +1,30 @@
 import "./App.css";
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import NewOrderPage from "./pages/NewOrderPage";
-import AuthPage from "./pages/AuthPage";
-import OrderHistoryPage from "./pages/OrderHistoryPage";
-import NavBar from "./components/NavBar";
+import { AuthPage } from "./pages/AuthPage";
+import { NewOrderPage } from "./pages/NewOrderPage";
+import { OrderHistoryPage } from "./pages/OrderHistoryPage";
+import { NavBar } from "./components/NavBar";
+import { getUser } from "./utilities/users-service";
 
 function App() {
-  const [user, setUser] = useState(null);
+  // Create a user state
+  const [user, setUser] = useState(getUser());
+
   return (
-    <main className="App">
-      {/* If NavBar outside of the ternary expression, it will only show up if the expression is true */}
-      {/* <NavBar />  */}
+    <div className="App">
       {user ? (
-        // If you want to syle a fragment "tag", you must turn it into a div (or different element) because they cannot be styled.
         <>
-        {/* If NavBar is inside the ternary expression, it will show up only if there is a user */}
-        <NavBar/>
+          <NavBar user={user} setUser={setUser} />
           <Routes>
-            <Route path="/orders" element={<OrderHistoryPage />} />
             <Route path="/orders/new" element={<NewOrderPage />} />
+            <Route path="orders" element={<OrderHistoryPage />} />
           </Routes>
         </>
       ) : (
-        <AuthPage/>
+        <AuthPage setUser={setUser} />
       )}
-    </main>
+    </div>
   );
 }
 
